@@ -1,0 +1,13 @@
+{
+  "displayName": "Light Assistant",
+  "name": "com.unity.light-assistant",
+  "unity": "2019.2",
+  "version": "0.0.0-preview",
+  "dependencies": {},
+  "description": "Provides editor tools for showing relationships between lights and renderers.",
+  "author": "Simon Wittber <simonwittber@unity3d.com> (https://github.com/smnwttbr)",
+  "contributors": [
+    "Simon Wittber <simonwittber@unity3d.com> (https://github.com/smnwttbr)"
+  ]        
+  
+}
