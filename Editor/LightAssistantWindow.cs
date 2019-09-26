@@ -28,6 +28,8 @@ namespace Unity.LightRelationships
 
         int hotLightIndex = -1;
         int lastHotLightIndex = -1;
+        bool showAllRelations = true;
+        bool showLightGizmos = true;
 
         [MenuItem("Window/General/Light Assistant")]
         static void OpenWindow()
@@ -56,6 +58,7 @@ namespace Unity.LightRelationships
 
         void OnUpdate()
         {
+            //If the light being modified has changed, ping the hierarchy view and repaint the window.
             if (lastHotLightIndex != hotLightIndex)
             {
                 lastHotLightIndex = hotLightIndex;
@@ -69,68 +72,119 @@ namespace Unity.LightRelationships
 
         void DuringSceneGUI(SceneView sceneView)
         {
-            var center = Selection.activeTransform;
-            if (center != null)
+            if (Selection.activeTransform != null)
                 for (var i = 0; i < lights.Count; i++)
                 {
-                    EditorGUI.BeginChangeCheck();
                     var light = lights[i];
                     var lightPosition = light.transform.position;
-                    var rotation = light.transform.rotation;
-                    var range = light.range;
-                    var angleAndRange = new Vector2(light.spotAngle, light.range);
-
-                    if (light.type == LightType.Point)
+                    var handleSize = HandleUtility.GetHandleSize(lightPosition) * 0.45f;
+                    if (Handles.Button(lightPosition, Quaternion.LookRotation(sceneView.camera.transform.forward), handleSize, handleSize, Handles.CircleHandleCap))
                     {
-                        DrawPointLightGUI(light, ref lightPosition, rotation, ref range);
-                    }
-
-                    if (light.type == LightType.Spot)
-                    {
-                        Handles.TransformHandle(ref lightPosition, ref rotation);
-                        Handles.color = light.enabled ? kGizmoDisabledLight : kGizmoDisabledLight;
-                        angleAndRange = HandleExt.DoConeHandle(rotation, lightPosition, angleAndRange, 1.0f, 1.0f, false);
-                    }
-
-                    if (light.type == LightType.Directional)
-                    {
-                        DrawDirectionalLightGUI(light, ref lightPosition, ref rotation);
-                    }
-
-                    if (EditorGUI.EndChangeCheck())
-                    {
-                        Undo.RecordObject(light.transform, "Modify Light");
-                        light.transform.position = lightPosition;
-                        light.transform.rotation = rotation;
-                        if (light.type == LightType.Spot)
-                        {
-                            light.spotAngle = angleAndRange.x;
-                            light.range = Mathf.Max(0.01f, angleAndRange.y);
-                        }
-                        else
-                            light.range = Mathf.Max(0.01f, range);
                         hotLightIndex = i;
-                        lightObjects[i].Update();
-                        Repaint();
+                    }
+
+                    if (showLightGizmos)
+                    {
+                        DrawLightGizmos(i);
                     }
 
                     if (hotLightIndex == i)
                     {
-                        Handles.color = SCENE_SELECTION_COLOR;
-                        Handles.DrawSolidDisc(light.transform.position, sceneView.camera.transform.forward, HandleUtility.GetHandleSize(light.transform.position));
+                        DecorateSelectedLight(sceneView, light);
                     }
 
-                    foreach (var otherObject in otherObjects[i])
+                    if (showAllRelations)
                     {
-                        var pos = otherObject.transform.position;
-                        var isOutOfRange = IsOutOfRange(light, pos);
-                        Handles.color = light.color;
-                        if (isOutOfRange)
-                            Handles.DrawDottedLine(pos, lightPosition, 5);
-                        else
-                            Handles.DrawAAPolyLine(1, pos, lightPosition);
+                        ShowAllLightRelationships(i);
+                    }
+                    else
+                    {
+                        ShowCurrentlySelectedLightRelationship(Selection.activeTransform, light);
                     }
                 }
+        }
+
+        void ShowCurrentlySelectedLightRelationship(Transform selectedRenderer, Light light)
+        {
+            var pos = selectedRenderer.position;
+            var isOutOfRange = IsOutOfRange(light, pos);
+            Handles.color = light.color;
+            if (isOutOfRange)
+                Handles.DrawDottedLine(pos, light.transform.position, 5);
+            else
+                Handles.DrawAAPolyLine(3, pos, light.transform.position);
+        }
+
+        void ShowAllLightRelationships(int index)
+        {
+            var light = lights[index];
+            foreach (var otherObject in otherObjects[index])
+            {
+                var pos = otherObject.transform.position;
+                var isOutOfRange = IsOutOfRange(light, pos);
+                Handles.color = light.color;
+                if (isOutOfRange)
+                    Handles.DrawDottedLine(pos, light.transform.position, 5);
+                else
+                    Handles.DrawAAPolyLine(3, pos, light.transform.position);
+            }
+        }
+
+        static void DecorateSelectedLight(SceneView sceneView, Light light)
+        {
+            Handles.color = SCENE_SELECTION_COLOR;
+            Handles.DrawSolidDisc(light.transform.position, sceneView.camera.transform.forward, HandleUtility.GetHandleSize(light.transform.position)*0.44f);
+        }
+
+        void DrawLightGizmos(int index)
+        {
+            var light = lights[index];
+            var lightPosition = light.transform.position;
+            EditorGUI.BeginChangeCheck();
+            var rotation = light.transform.rotation;
+            var range = light.range;
+            var angleAndRange = new Vector2(light.spotAngle, light.range);
+
+            if (light.type == LightType.Point)
+            {
+                DrawPointLightGUI(light, ref lightPosition, rotation, ref range);
+            }
+
+            if (light.type == LightType.Spot)
+            {
+                Handles.TransformHandle(ref lightPosition, ref rotation);
+                Handles.color = light.enabled ? kGizmoDisabledLight : kGizmoDisabledLight;
+                angleAndRange = HandleExt.DoConeHandle(rotation, lightPosition, angleAndRange, 1.0f, 1.0f, false);
+            }
+
+            if (light.type == LightType.Directional)
+            {
+                DrawDirectionalLightGUI(light, ref lightPosition, ref rotation);
+            }
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                UpdateLightProperties(index, light, lightPosition, rotation, range, angleAndRange);
+                Repaint();
+            }
+
+        }
+
+        void UpdateLightProperties(int index, Light light, Vector3 lightPosition, Quaternion rotation, float range, Vector2 angleAndRange)
+        {
+            Undo.RecordObject(light.transform, "Modify Light");
+            light.transform.position = lightPosition;
+            light.transform.rotation = rotation;
+            if (light.type == LightType.Spot)
+            {
+                light.spotAngle = angleAndRange.x;
+                light.range = Mathf.Max(0.01f, angleAndRange.y);
+            }
+            else
+                light.range = Mathf.Max(0.01f, range);
+            //set the active editing light to currently edited light.
+            hotLightIndex = index;
+            lightObjects[index].Update();
         }
 
         bool IsOutOfRange(Light light, Vector3 position)
@@ -207,11 +261,13 @@ namespace Unity.LightRelationships
             Repaint();
         }
 
-
         void OnGUI()
         {
+            GUILayout.BeginHorizontal();
+            showAllRelations = GUILayout.Toggle(showAllRelations, "Show All Relations", "button");
+            showLightGizmos = GUILayout.Toggle(showLightGizmos, "Show Light Gizmos", "button");
+            GUILayout.EndHorizontal();
             scroll = EditorGUILayout.BeginScrollView(scroll);
-            GUILayout.Label("Lights");
             for (var i = 0; i < lightObjects.Count; i++)
             {
                 var editor = lightObjects[i];
@@ -225,11 +281,11 @@ namespace Unity.LightRelationships
                         hotLightIndex = i;
                     }
                     GUILayout.FlexibleSpace();
-                    if (GUILayout.Button("A"))
+                    if (GUILayout.Button(new GUIContent("A", "Align View to Object")))
                     {
                         SceneView.lastActiveSceneView.AlignViewToObject(lights[i].transform);
                     }
-                    if (GUILayout.Button("B"))
+                    if (GUILayout.Button(new GUIContent("B", "Align Object to View")))
                     {
                         var cam = SceneView.lastActiveSceneView.camera.transform;
                         lights[i].transform.rotation = cam.rotation;
