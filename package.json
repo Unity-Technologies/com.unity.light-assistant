@@ -7,7 +7,8 @@
   "description": "Provides editor tools for showing relationships between lights and renderers.",
   "author": "Simon Wittber <simonwittber@unity3d.com> (https://github.com/smnwttbr)",
   "contributors": [
-    "Simon Wittber <simonwittber@unity3d.com> (https://github.com/smnwttbr)"
+    "Simon Wittber <simonwittber@unity3d.com> (https://github.com/smnwttbr)",
+    "Unity Technologies Japan"
   ]        
   
 }
