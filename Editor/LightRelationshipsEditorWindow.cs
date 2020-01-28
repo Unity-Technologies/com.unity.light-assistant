@@ -51,10 +51,12 @@ namespace Unity.LightRelationships
             renderers.Clear();
             lightGroups.Clear();
             rendererGroups.Clear();
-            foreach (var n in SelectionGroupUtility.GetGroupNames())
+            foreach (var n in SelectionGroupManager.instance)
             {
-                foreach (var g in SelectionGroupUtility.GetMembers(n))
+                foreach (var obj in n)
                 {
+                    var g = obj as GameObject;
+                    if (g == null) continue;
                     if (g.TryGetComponent<Light>(out Light light))
                         AddLight(light);
                     if (g.TryGetComponent<Renderer>(out Renderer renderer))
