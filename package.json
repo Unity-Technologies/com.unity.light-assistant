@@ -11,5 +11,6 @@
   "contributors": [
     "Simon Wittber <simonwittber@unity3d.com> (https://github.com/smnwttbr)",
     "Unity Technologies Japan"
-  ]
+  ],
+  "type": "library"
 }
