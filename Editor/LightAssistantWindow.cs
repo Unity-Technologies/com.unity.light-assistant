@@ -12,6 +12,9 @@ using UnityEngine.SceneManagement;
 
 namespace Unity.LightRelationships
 {
+    /// <summary>
+    /// Editor window to provide access to light assistant functionality.
+    /// </summary>
     public class LightAssistantWindow : EditorWindow
     {
         static Color SCENE_SELECTION_COLOR = new Color(1, 1, 0, 0.15f);

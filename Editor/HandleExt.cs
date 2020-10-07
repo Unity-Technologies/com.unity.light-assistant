@@ -4,6 +4,16 @@ using UnityEngine;
 namespace Unity.LightRelationships
 {
     public class HandleExt {
+        /// <summary>
+        /// Implements an adjustable cone handle.
+        /// </summary>
+        /// <param name="rotation"></param>
+        /// <param name="position"></param>
+        /// <param name="angleAndRange"></param>
+        /// <param name="angleScale"></param>
+        /// <param name="rangeScale"></param>
+        /// <param name="handlesOnly"></param>
+        /// <returns></returns>
         public static Vector2 DoConeHandle(Quaternion rotation, Vector3 position, Vector2 angleAndRange, float angleScale, float rangeScale, bool handlesOnly)
         {
             float spotAngle = angleAndRange.x;

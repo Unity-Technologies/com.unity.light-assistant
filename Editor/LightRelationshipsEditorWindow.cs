@@ -12,6 +12,9 @@ using UnityEngine.SceneManagement;
 
 namespace Unity.LightRelationships
 {
+    /// <summary>
+    /// Editor window to visualise light relationships.
+    /// </summary>
     public class LightRelationshipsEditorWindow : EditorWindow
     {
 
