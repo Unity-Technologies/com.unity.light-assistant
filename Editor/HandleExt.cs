@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Unity.LightRelationships
 {
-    public class HandleExt {
+    internal class HandleExt {
         /// <summary>
         /// Implements an adjustable cone handle.
         /// </summary>

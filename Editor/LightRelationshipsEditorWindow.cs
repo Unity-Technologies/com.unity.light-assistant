@@ -15,7 +15,7 @@ namespace Unity.LightRelationships
     /// <summary>
     /// Editor window to visualise light relationships.
     /// </summary>
-    public class LightRelationshipsEditorWindow : EditorWindow
+    internal class LightRelationshipsEditorWindow : EditorWindow
     {
 
         Vector2 scroll;
