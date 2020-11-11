@@ -4,7 +4,6 @@
     "com.unity.ext.nunit": "1.0.0",
     "com.unity.ide.rider": "1.1.4",
     "com.unity.ide.vscode": "1.2.2",
-    "com.unity.selection-groups": "https://github.com/Unity-Technologies/selectiongroups.git#master",
     "com.unity.test-framework": "1.1.18",
     "com.unity.textmeshpro": "2.0.1",
     "com.unity.timeline": "1.2.6",
