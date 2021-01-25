@@ -1,7 +1,7 @@
 {
     "name": "LightRelationshipsEditor",
     "references": [
-        "GUID:dd0c3af278986724c94e16a73064c4e4"
+        "GUID:a1f2a1ae20746f947b43a9e2da5b01fc"
     ],
     "includePlatforms": [
         "Editor"

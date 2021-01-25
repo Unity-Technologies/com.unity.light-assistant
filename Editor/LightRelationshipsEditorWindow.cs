@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Unity.SelectionGroups;
+using Unity.SelectionGroups.Runtime;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEditorInternal;
@@ -15,7 +16,7 @@ namespace Unity.LightRelationships
     /// <summary>
     /// Editor window to visualise light relationships.
     /// </summary>
-    public class LightRelationshipsEditorWindow : EditorWindow
+    internal class LightRelationshipsEditorWindow : EditorWindow
     {
 
         Vector2 scroll;
@@ -54,7 +55,8 @@ namespace Unity.LightRelationships
             renderers.Clear();
             lightGroups.Clear();
             rendererGroups.Clear();
-            foreach (var n in SelectionGroupManager.instance)
+            
+            foreach (var n in SelectionGroupManager.Groups)
             {
                 foreach (var obj in n)
                 {
